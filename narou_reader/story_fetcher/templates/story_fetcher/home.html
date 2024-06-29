@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Top Narou Stories Today</h1>
+<ul>
+{% for ranking in top_stories %}
+    <li>
+        <h2>{{ ranking.rank }}. {{ ranking.story.title }}</h2>
+        <p>Author: {{ ranking.story.author }}</p>
+        <p>Genre: {{ ranking.story.genre.name }}</p>
+        <p>Daily Points: {{ ranking.daily_point }}</p>
+        <p>{{ ranking.story.synopsis|truncatewords:50 }}</p>
+    </li>
+{% empty %}
+    <li>No stories available today.</li>
+{% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Top Narou Stories</title>
+</head>
+<body>
+    <h1>Top Narou Stories</h1>
+    {% for story in stories %}
+        <div>
+            <h2>{{ story.title }}</h2>
+            <p>Author: {{ story.author }}</p>
+            <p>{{ story.synopsis|truncatewords:50 }}</p>
+            <p>Daily Points: {{ story.daily_point }}</p>
+        </div>
+    {% endfor %}
+</body>
+</html>
