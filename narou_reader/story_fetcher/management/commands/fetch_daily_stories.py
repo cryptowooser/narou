@@ -6,6 +6,7 @@ from datetime import datetime
 from django.utils.timezone import make_aware
 from django.conf import settings
 from zoneinfo import ZoneInfo
+from story_fetcher.models import GENRE_CHOICES
 
 class Command(BaseCommand):
     help = 'Fetches top stories from Narou API and stores them in the database'
@@ -16,8 +17,8 @@ class Command(BaseCommand):
 
         for story_data in stories:
             genre, _ = Genre.objects.get_or_create(
-                code=story_data['genre'],
-                defaults={'name': story_data['genre']}  # You might want to map genre codes to names
+                code=int(story_data['genre']),
+                defaults={'name': GENRE_CHOICES.get(int(story_data['genre']), 'Unknown')}
             )
 
             story, created = Story.objects.update_or_create(
