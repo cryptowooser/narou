@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>User Preferences</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <h2>Excluded Tags</h2>
+    {{ form.as_p }}
+    <button type="submit">Save Preferences</button>
+</form>
+
+<h2>Hidden Stories</h2>
+<ul>
+{% for story in hidden_stories %}
+    <li>
+        {{ story.title }}
+        <form method="post" action="{% url 'unhide_story' story.id %}">
+            {% csrf_token %}
+            <button type="submit">Unhide</button>
+        </form>
+    </li>
+{% empty %}
+    <li>No hidden stories.</li>
+{% endfor %}
+</ul>
+{% endblock %}

@@ -31,6 +31,10 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -123,3 +128,64 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+
+SITE_ID = 1
+LOGIN_REDIRECT_URL = '/'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_REQUIRED = True
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# CSRF Settings
+import os
+from django.core.management.utils import get_random_secret_key
+from urllib.parse import urlparse
+
+# Use environment variable for DEBUG, defaulting to True if not set
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
+
+# Generate a new secret key if it doesn't exist
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', get_random_secret_key())
+
+# Get the host from the environment, or use a default
+DJANGO_HOST = os.environ.get('DJANGO_HOST', 'idx-narou-1716625743719.cluster-bs35cdu5w5cuaxdfch3hqqt7zm.cloudworkstations.dev')
+
+# Construct the full URL
+SITE_URL = f'https://{DJANGO_HOST}'
+
+# Parse the URL to get components
+parsed_url = urlparse(SITE_URL)
+
+# Add your development URL to ALLOWED_HOSTS
+ALLOWED_HOSTS = [parsed_url.hostname, 'localhost', '127.0.0.1']
+
+# Add your development URL to CSRF_TRUSTED_ORIGINS
+CSRF_TRUSTED_ORIGINS = [SITE_URL]
+
+# Only set these in production
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    USE_X_FORWARDED_HOST = True
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+else:
+    # For development, allow HTTP
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+
+# Add this to handle the varying port numbers
+if DEBUG:
+    import socket
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
+    
+    # Add all possible localhost URLs to CSRF_TRUSTED_ORIGINS
+    for port in range(8000, 9000):  # Adjust range as needed
+        CSRF_TRUSTED_ORIGINS.append(f'https://{port}-{DJANGO_HOST}')

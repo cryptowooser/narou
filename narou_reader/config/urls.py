@@ -21,4 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('stories/', include('story_fetcher.urls')),
     path('',home, name='home'),
+    path('user/', include('user_preferences.urls')),
+    path('accounts/', include('allauth.urls')),
 ]

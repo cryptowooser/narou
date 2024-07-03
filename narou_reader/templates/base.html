@@ -7,7 +7,18 @@
 </head>
 <body>
     <header>
-        <!-- Add navigation here if needed -->
+        <nav>
+            <ul>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'user_preferences' %}">Preferences</a></li>
+                    <li><a href="{% url 'account_logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'account_login' %}">Login</a></li>
+                    <li><a href="{% url 'account_signup' %}">Register</a></li>
+                {% endif %}
+            </ul>
+        </nav>
     </header>
     
     <main>
@@ -16,7 +27,7 @@
     </main>
     
     <footer>
-        <!-- Add footer content here -->
+        <p>&copy; 2024 Narou Reader</p>
     </footer>
 </body>
 </html>
